@@ -12,7 +12,6 @@ def students():
 
 def searchs(key,value):
     data = students()
-    print(data)
     for i in data:
         if(i[key]==value):
             return i
@@ -57,9 +56,9 @@ def removestd(key, value):
     save(b)
 
 
-def addstudent(name,telcode,melli,isfirst):
+def addstudent(name,telcode,isfirst,cllass):
     data = students()
-    data.append({"name": name, "telcode": telcode, "melli": melli,"isfirst":isfirst})
+    data.append({"name": name, "telcode": telcode,"isfirst":isfirst,"class":cllass})
     with open(studentsfile, 'wb') as f:
         json.dump(data, codecs.getwriter('utf-8')(f), ensure_ascii=False)
     print("done")
