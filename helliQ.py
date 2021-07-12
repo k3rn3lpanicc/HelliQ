@@ -4,16 +4,25 @@ import telepot
 from telepot.loop import MessageLoop
 import os.path
 import codecs
+import studenthandle
 from studenthandle import *
 
 
 def handle(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
     print(msg)
+    if checkstudent(str(msg['from']['id'])):
+        print(1)
+        if (content_type=="text" and msg['text']=="/start"):
+            user = searchs("telcode",str(msg['from']['id']))
+            if(not (user==False)):
+                bot.sendMessage(msg['from']['id'],"آقای " + user['name']+ " به بات خوش آمدید", parse_mode="Markdown")
+    else:
+        bot.sendMessage(msg['from']['id'], "شما مجاز به استفاده از بات نیستید", parse_mode="Markdown")
     if content_type == 'text':
-        bot.sendMessage(msg['from']['id'], msg['text'], parse_mode="Markdown")
+        print("11")
+        #bot.sendMessage(msg['from']['id'], msg['text'], parse_mode="Markdown")
     elif content_type == 'audio':
-
         txt = msg['caption']
         print(txt)
         print("ok")

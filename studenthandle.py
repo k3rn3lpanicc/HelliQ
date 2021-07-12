@@ -10,6 +10,13 @@ def students():
     f.close()
     return data
 
+def searchs(key,value):
+    data = students()
+    print(data)
+    for i in data:
+        if(i[key]==value):
+            return i
+    return False
 
 def printstudents(key):
     data = students()
@@ -18,6 +25,13 @@ def printstudents(key):
             print(i)
         else:
             print(i[key])
+
+def checkstudent(idcode):
+    data=students()
+    for i in data:
+        if(i['telcode']==idcode):
+            return True
+    return False
 
 
 def save(students):
@@ -35,13 +49,13 @@ def removestd(key, value):
     save(b)
 
 
-def addstudent(name,telcode,melli):
+def addstudent(name,telcode,melli,isfirst):
     data = students()
-    data.append({"name": name, "telcode": telcode, "melli": melli})
+    data.append({"name": name, "telcode": telcode, "melli": melli,"isfirst":isfirst})
     with open(studentsfile, 'wb') as f:
         json.dump(data, codecs.getwriter('utf-8')(f), ensure_ascii=False)
     print("done")
-
+    
 
 if not os.path.isfile(studentsfile):
     k = open(studentsfile, "w", encoding='utf-8')
