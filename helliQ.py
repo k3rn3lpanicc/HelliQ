@@ -20,8 +20,7 @@ def handle(msg):
         text = f.read()
     
     tt=text
-    fir=''
-    sec=''
+    
     if(tt!=''):
         fir=tt.split(':')[0]
         sec=tt.split(':')[1]
