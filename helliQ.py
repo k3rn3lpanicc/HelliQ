@@ -34,7 +34,7 @@ def handle(msg):
         print("yes")
 
 
-#telepot.api.set_proxy("",  basic_auth=())
+
 def on_callback_query(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     print('Callback Query:', query_id, from_id, query_data)
