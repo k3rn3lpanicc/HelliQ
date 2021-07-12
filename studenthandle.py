@@ -33,6 +33,14 @@ def checkstudent(idcode):
             return True
     return False
 
+def change(key , value , key2,value2):
+    data=students()
+    for i in data:
+        if(i[key]==value):
+            i[key2] = value2
+    save(data)
+    return True
+
 
 def save(students):
     data=students
@@ -55,7 +63,7 @@ def addstudent(name,telcode,melli,isfirst):
     with open(studentsfile, 'wb') as f:
         json.dump(data, codecs.getwriter('utf-8')(f), ensure_ascii=False)
     print("done")
-    
+
 
 if not os.path.isfile(studentsfile):
     k = open(studentsfile, "w", encoding='utf-8')
