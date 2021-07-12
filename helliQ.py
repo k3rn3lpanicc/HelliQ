@@ -42,13 +42,13 @@ def handle(msg):
     bot.sendMessage(msg['from']['id'], "گزینه خود را انتخاب کنید", parse_mode="Markdown",reply_markup = keyboard)
 
 
-#telepot.api.set_proxy("",  basic_auth=())
+
 def on_callback_query(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     print('Callback Query:', query_id, from_id, query_data)
     bot.answerCallbackQuery(query_id, text='Button has been pressed')
 
-bot = telepot.Bot("1749966129:AAE8qFyu9T-cchkzM1rv4EzhNHBJFKH1mVA")
+bot = telepot.Bot("1796555565:AAF15GRWhUIFto6uzVqLWVgdBHW_P56GMgU")
 MessageLoop(bot, {'chat': handle,
                   'callback_query': on_callback_query}).run_as_thread()
 print ('Listening ...')
