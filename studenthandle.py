@@ -58,7 +58,7 @@ def removestd(key, value):
 
 def addstudent(name,telcode,isfirst,cllass):
     data = students()
-    data.append({"name": name, "telcode": telcode, "isfirst": isfirst, "class": cllass, "isasking": "false","toid":"","state":"0"})
+    data.append({"name": name, "telcode": telcode, "isfirst": isfirst, "class": cllass, "isasking": "false","toid":"","state":"0", "msgs": []})
     with open(studentsfile, 'wb') as f:
         json.dump(data, codecs.getwriter('utf-8')(f), ensure_ascii=False)
     print("done")
