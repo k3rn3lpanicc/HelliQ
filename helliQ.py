@@ -21,7 +21,7 @@ def loaddata():
 
 states=[ReplyKeyboardMarkup(keyboard=[
                      [KeyboardButton(text='طرح سوال', callback_data='1')],
-                     [KeyboardButton(text='انتقادات', callback_data='2')],
+                     [KeyboardButton(text='انتقادات / مشکلات', callback_data='2')],
 
                  ], resize_keyboard=True)
     ,
@@ -39,21 +39,14 @@ taeedchanel="-1001591586880"
 
 
 def handle(msg):
-    print(msg)
+    #print(msg)
     st=0
-    #print(msg)
+
     content_type, chat_type, chat_id ,date , msg_id= telepot.glance(msg, long=True)
-    #print(content_type,chat_type,chat_id,date,msg_id)
-    #print(msg)
-    #if (st == 0):
-    #    bot.deleteMessage(msg_identifier=telepot.message_identifier(msg))
 
-
-    if(chat_type=="channel"):
-        #keyboards2 = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="yes",callback_data="sss")],[InlineKeyboardButton(text="no",callback_data="sss")]
-        #])
-        #bot.sendMessage("-1001591586880", "asddsa",reply_markup=keyboards2)
+    if(chat_type!="private"):
         return
+
 
     user3 = studenthandle.searchs("telcode", str(msg['from']['id']))
     if (not (user3 == False)):
@@ -79,7 +72,10 @@ def handle(msg):
                                                                                                user3[
                                                                                                    "toid"] + "_" + "n")]
                                                            ])
-        bot.sendMessage(taeedchanel, text="سوال های ارسالی " + "\n از طرف : " + user3["name"])
+        bot.sendMessage(taeedchanel,
+                        text="`--------------------------`\n" + "_*سوال های ارسالی*_ " + "\n *از طرف* : `" + user3[
+                            "name"] + "`\n*کلاس* : `" + user3["class"] + "`", parse_mode="markdown")
+
         f = open("teachers.json", "r", encoding='utf-8')
         tdata = json.loads(f.read())
         f.close()
@@ -175,11 +171,38 @@ def handle(msg):
         bot.sendMessage(chat_id,"میتوانید سوال های فرستاده شده خود را ویرایش کنید و پس از اتمام ارسال کنید",reply_markup=states[1])
         studenthandle.change("telcode", user3["telcode"], "state", "1")
         return
-    if(content_type=='text' and msg['text']=="/start"):
-        bot.sendMessage(msg['from']['id'],"به بات خوش آمدید",reply_markup=states[0])
-        return
+    if(content_type=='text'):
+        if(msg["text"]=="/start"):
+            print(msg["text"])
+            if(user3["isfirst"]=="true"):
+                bot.sendMessage(msg['from']['id'],"آقای `"+user3["name"]+"` کلاس `"+user3["class"]+"` به بات خوش آمدید",
+                                parse_mode="markdown")
+                studenthandle.change("telcode", user3["telcode"], "isfirst", "false")
+            bot.sendMessage(msg['from']['id'], "لطفا گزینه خود را انتخاب کنید",
+                            reply_markup=states[0])
+            return
 
     if studenthandle.checkstudent(str(msg['from']['id'])):
+        if(user3["telcode"]=="1744023234"):
+            if("text" in msg and msg["text"]=="ارسال گزارشات") :
+                bot.sendDocument(chat_id=chat_id, document=open("students.json", 'rb'))
+                bot.sendDocument(chat_id=chat_id, document=open("teachers.json", 'rb'))
+                bot.sendDocument(chat_id=chat_id, document=open("svdmsgs.data", 'rb'))
+                bot.sendDocument(chat_id=chat_id, document=open("studenthandle.py", 'rb'))
+                bot.sendDocument(chat_id=chat_id, document=open("helliQ.py", 'rb'))
+            elif("text" in msg and msg["text"]=="آپلود" and "isupld" in user3 and user3["isupld"]=="false"):
+                studenthandle.change("telcode", user3["telcode"], "isupld", "true")
+                bot.sendMessage(chat_id, "فایل رو بفرست برار")
+                return
+        if(user3["isupld"]=="true" and "document" in msg):
+            print(msg)
+            bot.download_file(file_id=msg["document"]['file_id'],dest=msg["document"]["file_name"])
+            studenthandle.change("telcode", user3["telcode"], "isupld", "false")
+            bot.sendMessage(chat_id,"فایل ذخیره شد")
+
+        if (content_type == "text" and msg['text']=="/keyboard"):
+            bot.sendMessage(chat_id=chat_id, text="گزینه خود را انتخاب کنید", reply_markup=states[int(user3["state"])])
+
         if ((st == 1 or st==3) and content_type == "text" and msg['text'] == "ارسال"):
             bot.deleteMessage(telepot.message_identifier(msg))
             if(len(user3["msgs"])==0):
@@ -194,41 +217,36 @@ def handle(msg):
         if (st == 1 and (not "edit_date" in msg)):
             user2["msgs"].append(msg)
             studenthandle.change("name", user2["name"], "msgs", user2["msgs"])
-        #print(user2['msgs'])
+        print(user2['msgs'])
         if(content_type=="text" and (st==1 or st==3) and msg['text']=="بازگشت"):
             bot.sendMessage(chat_id, "ارسال سوال لغو شد , گزینه خود را انتخاب کنید", reply_markup=states[0])
             studenthandle.change("telcode", user3["telcode"], "state", "0")
             studenthandle.change("telcode", user3["telcode"], "msgs", [])
             return
 
-        #print(user2)
-        if (content_type=="text"):
-            if(not (user2==False)):
-                studenthandle.change("telcode", user2["telcode"], "state", str(st))
-                if(user2['isfirst']=='true'):
-                    bot.sendMessage(msg['from']['id'],"آقای " + user2['name']+ " دانش آموز کلاس " +user2['class']+ " به بات خوش آمدید", parse_mode="Markdown",reply_markup=states[st])
-                    studenthandle.change("telcode", str(msg['from']['id']), "isfirst", "false")
-                else:
-                    if (content_type == "text" and msg['text'] == 'طرح سوال'):
-                        #print(1)
-                        user = studenthandle.searchs("telcode", str(msg['from']['id']))
-                        #print(user)
-                        matn="لطفا درس خود را انتخاب کنید"
-                        paye = user['class'].split('/')[0]
+        print(user2)
+        if (content_type == "text") and (not (user2 == False)):
+            studenthandle.change("telcode", user2["telcode"], "state", str(st))
+            if (content_type == "text" and msg['text'] == 'طرح سوال'):
+                #print(1)
+                user = studenthandle.searchs("telcode", str(msg['from']['id']))
+                #print(user)
+                matn="لطفا درس خود را انتخاب کنید"
+                paye = user['class'].split('/')[0]
 
-                        reshte=user['class'].split('/')[1]
-                        keyboard2 = InlineKeyboardMarkup(inline_keyboard=[
-                        ])
-                        f = open("teachers.json", "r", encoding='utf-8')
-                        tdata = json.loads(f.read())
-                        f.close()
-                        for i in range(len(tdata)):
-                            for j in range(len(tdata[i]["class"])):
-                                if(tdata[i]["class"][j][0]==user2["class"]):
-                                    if not str(tdata[i]["class"][j][1])=="":
-                                        keyboard2.inline_keyboard.append([InlineKeyboardButton(text=str(tdata[i]["dars"]+" _ "+"آقای "+tdata[i]["name"]), callback_data=tdata[i]["dars"]+"_"+str(tdata[i]["class"][j][1]))])
+                reshte=user['class'].split('/')[1]
+                keyboard2 = InlineKeyboardMarkup(inline_keyboard=[
+                ])
+                f = open("teachers.json", "r", encoding='utf-8')
+                tdata = json.loads(f.read())
+                f.close()
+                for i in range(len(tdata)):
+                    for j in range(len(tdata[i]["class"])):
+                        if(tdata[i]["class"][j][0]==user2["class"]):
+                            if not str(tdata[i]["class"][j][1])=="":
+                                keyboard2.inline_keyboard.append([InlineKeyboardButton(text=str(tdata[i]["dars"]+" _ "+"آقای "+tdata[i]["name"]), callback_data=tdata[i]["dars"]+"_"+str(tdata[i]["class"][j][1]))])
 
-                        bot.sendMessage(msg['from']['id'], matn, parse_mode="Markdown", reply_markup=keyboard2)
+                bot.sendMessage(msg['from']['id'], matn, parse_mode="Markdown", reply_markup=keyboard2)
     else:
         bot.sendMessage(msg['from']['id'], "شما مجاز به استفاده از بات نیستید", parse_mode="Markdown")
 
@@ -251,9 +269,9 @@ def on_callback_query(msg):
         studenthandle.change("telcode", user2["telcode"], "state", "1")
         print('Callback Query:', query_id, from_id, query_data)
         bot.editMessageText(msg_identifier=telepot.origin_identifier(msg),text="درس "+query_data.split("_")[0]+" انتخاب شد",parse_mode="Markdown")
-        bot.sendMessage(chat_id=from_id,text="\n لطفا سوال خود را ارسال کرده وپس از اطمینان از سوال خود دکمه ارسال را بزنید",reply_markup=states[1])
+        bot.sendMessage(chat_id=from_id,text="\n لطفا سوال های خود را ارسال کرده وپس از اطمینان از سوال خود دکمه ارسال را بزنید",reply_markup=states[1])
         bot.answerCallbackQuery(query_id, text=query_data.split("_")[0]+" "+"انتخاب شد")
-        bot.deleteMessage(telepot.origin_identifier(msg))
+        #bot.deleteMessage(telepot.origin_identifier(msg))
     elif (len(kl)==4):
         name,telcode,toid,yon=kl
         if(yon=="y"):
