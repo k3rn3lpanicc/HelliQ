@@ -96,8 +96,8 @@ def handle(msg):
                     gpp.append(user3["msgs"][i]["media_group_id"])
             #print(gpp)
             #bot.sendMessage(chat_id=user3["toid"],text=(user3["msgs"][i])['text']+"\n از طرف : "+user3["name"])
-
-            if("text" in user3["msgs"][i] and (not "photo" in user3["msgs"][i])):
+#hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+            if((not "photo" in user3["msgs"][i])):
                 #bot.sendMessage(taeedchanel, text=(user3["msgs"][i])['text'], reply_markup=keyboards2)
                 f=bot.forwardMessage(chat_id=taeedchanel, from_chat_id=(user3["msgs"][i])["from"]["id"],
                                    message_id=(user3["msgs"][i])["message_id"])
@@ -146,12 +146,14 @@ def handle(msg):
                     savedata(ll)
                     #print(ll)
                 else :
-                    if("caption" in user3["msgs"][i]):
-                        bot.sendPhoto(chat_id=taeedchanel, photo=user3["msgs"][i]['photo'][len(user3["msgs"][i]['photo'])-1]['file_id'], parse_mode="Markdown",caption=user3["msgs"][i]["caption"])
-                    else:
-                        bot.sendPhoto(chat_id=taeedchanel,
-                                      photo=user3["msgs"][i]['photo'][len(user3["msgs"][i]['photo']) - 1]['file_id'],
-                                      parse_mode="Markdown")
+                    bot.forwardMessage(chat_id=taeedchanel, from_chat_id=(user3["msgs"][i])["from"]["id"],
+                                       message_id=(user3["msgs"][i])["message_id"])
+                    #if("caption" in user3["msgs"][i]):
+                    #    bot.sendPhoto(chat_id=taeedchanel, photo=user3["msgs"][i]['photo'][len(user3["msgs"][i]['photo'])-1]['file_id'], parse_mode="Markdown",caption=user3["msgs"][i]["caption"])
+                    #else:
+                    #    bot.sendPhoto(chat_id=taeedchanel,
+                    #                  photo=user3["msgs"][i]['photo'][len(user3["msgs"][i]['photo']) - 1]['file_id'],
+                     #                 parse_mode="Markdown")
                     bot.sendMessage(taeedchanel,
                                     text="`ادمین ارسال`" + "\n" + "آیا پیام بالا ارسال شود؟" + "\n`------------------------------------`" + "\n" + "`فرستنده : `" + "`" +
                                          user3["name"] + "`\n`کلاس : " + user3["class"] + "`\n`درس : " + sk + "`",
@@ -185,11 +187,11 @@ def handle(msg):
     if studenthandle.checkstudent(str(msg['from']['id'])):
         if(user3["telcode"]=="1744023234"):
             if("text" in msg and msg["text"]=="ارسال گزارشات") :
-                bot.sendDocument(chat_id=chat_id, document=open("students.json", 'rb'))
-                bot.sendDocument(chat_id=chat_id, document=open("teachers.json", 'rb'))
-                bot.sendDocument(chat_id=chat_id, document=open("svdmsgs.data", 'rb'))
-                bot.sendDocument(chat_id=chat_id, document=open("studenthandle.py", 'rb'))
-                bot.sendDocument(chat_id=chat_id, document=open("helliQ.py", 'rb'))
+                bot.sendDocument(chat_id=chat_id, document=open("students.json", 'rb'),reply_to_message_id=msg_id)
+                bot.sendDocument(chat_id=chat_id, document=open("teachers.json", 'rb'),reply_to_message_id=msg_id)
+                bot.sendDocument(chat_id=chat_id, document=open("svdmsgs.data", 'rb'),reply_to_message_id=msg_id)
+                bot.sendDocument(chat_id=chat_id, document=open("studenthandle.py", 'rb'),reply_to_message_id=msg_id)
+                bot.sendDocument(chat_id=chat_id, document=open("helliQ.py", 'rb'),reply_to_message_id=msg_id)
             elif("text" in msg and msg["text"]=="آپلود" and "isupld" in user3 and user3["isupld"]=="false"):
                 studenthandle.change("telcode", user3["telcode"], "isupld", "true")
                 bot.sendMessage(chat_id, "فایل رو بفرست برار")
