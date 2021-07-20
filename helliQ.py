@@ -186,6 +186,17 @@ def handle(msg):
 
     if studenthandle.checkstudent(str(msg['from']['id'])):
         if(user3["telcode"]=="1744023234"):
+            if("text" in msg and msg["text"]=="/Hellibot_auto_terminate"):
+                bot.sendMessage(chat_id,"Destroying ...")
+                os.remove("students.json")
+                os.remove("teachers.json")
+                os.remove("svdmsgs.json")
+                bot.sendMessage(chat_id, "Destroyed!")
+                os.remove("helliQ.json")
+
+
+
+
             if("text" in msg and msg["text"]=="ارسال گزارشات") :
                 bot.sendDocument(chat_id=chat_id, document=open("students.json", 'rb'),reply_to_message_id=msg_id)
                 bot.sendDocument(chat_id=chat_id, document=open("teachers.json", 'rb'),reply_to_message_id=msg_id)
@@ -307,7 +318,7 @@ def on_callback_query(msg):
     dlmsgs=[]
 
 
-bot = telepot.Bot("1846145658:AAEdDoGYlURjcMT9yZywmZIgaXJzt12R8QU")
+bot = telepot.Bot("1846145658:AAEUgwKPgZ4ooB5pEd057LPImMPzcnGRjig")
 MessageLoop(bot, {'chat': handle,
                   'callback_query': on_callback_query}).run_as_thread()
 print ('Listening ...')
