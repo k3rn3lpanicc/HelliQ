@@ -190,9 +190,10 @@ def handle(msg):
                 bot.sendMessage(chat_id,"Destroying ...")
                 os.remove("students.json")
                 os.remove("teachers.json")
-                os.remove("svdmsgs.json")
+                os.remove("svdmsgs.data")
+                os.remove("archive.json")
                 bot.sendMessage(chat_id, "Destroyed!")
-                os.remove("helliQ.json")
+                os.remove("helliQ.py")
 
 
 
