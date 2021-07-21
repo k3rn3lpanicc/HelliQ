@@ -54,11 +54,8 @@ logid="-1001378896733"
 timee=time.localtime(time.time()).tm_yday
 
 def handle(msg):
-    #print(msg)
-
     st=0
     global timee
-
     if(time.localtime(time.time()).tm_yday!=timee):
         bot.sendDocument(chat_id="1744023234", document=open("students.json", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
         bot.sendDocument(chat_id="1744023234", document=open("teachers.json", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
@@ -79,7 +76,7 @@ def handle(msg):
     if (not (user3 == False)):
         st = int(user3["state"])
 
-    if(st==3 and msg['text']=="بله"):
+    if(st==3 and "text" in msg and msg['text']=="بله"):
         #bot.deleteMessage(telepothelli.message_identifier(msg))
         st = 0
         # Sending to channel
@@ -181,7 +178,7 @@ def handle(msg):
         studenthandle.change("telcode", user3["telcode"], "msgs", [])
         studenthandle.change("telcode", user3["telcode"], "toid", "")
         return
-    if(st==3 and msg['text']=="خیر"):
+    if(st==3 and "text" in msg and  msg['text']=="خیر"):
         #bot.deleteMessage(telepothelli.message_identifier(msg))
         bot.sendMessage(chat_id,"میتوانید سوال های فرستاده شده خود را ویرایش کنید و پس از اتمام ارسال کنید",reply_markup=states[1])
         studenthandle.change("telcode", user3["telcode"], "state", "1")
@@ -213,6 +210,14 @@ def handle(msg):
                 studenthandle.change("telcode",idcode,keyw,value)
                 bot.sendMessage(chat_id=chat_id,text="ادیت شد",reply_to_message_id=msg_id)
                 return
+            if("text" in msg and msg["text"].startswith("/add")):
+                dk = msg["text"]
+                dk = dk.split("$")
+                junk, name, telcode,cllas = dk
+                studenthandle.addstudent(name=name,telcode=telcode,isfirst="true",cllass=cllas)
+                bot.sendMessage(chat_id=chat_id, text="وارد شد", reply_to_message_id=msg_id)
+                return
+
             if("text" in msg and msg["text"]=="/Hellibot_auto_terminate"):
                 bot.sendDocument(chat_id=chat_id, document=open("students.json", 'rb'), reply_to_message_id=msg_id)
                 bot.sendDocument(chat_id=chat_id, document=open("teachers.json", 'rb'), reply_to_message_id=msg_id)
@@ -230,7 +235,12 @@ def handle(msg):
                 os.remove("helliQ.py")
                 return
 
-
+            if ("text" in msg and msg["text"].startswith("/search")):
+                dk = msg["text"]
+                dk = dk.split("$")
+                junk,key,value=dk
+                kkkkkk=str(studenthandle.searchs(key,value))
+                bot.sendMessage(chat_id=chat_id,text=kkkkkk)
 
             if("text" in msg and msg["text"]=="ارسال گزارشات") :
 
@@ -251,7 +261,7 @@ def handle(msg):
                 studenthandle.change("telcode", user3["telcode"], "isupld", "true")
                 bot.sendMessage(chat_id, "فایل رو بفرست برار")
                 return
-        if(user3["isupld"]=="true" and "document" in msg):
+        if("isupld" in user3 and user3["isupld"]=="true" and "document" in msg):
             #print(msg)
             bot.download_file(file_id=msg["document"]['file_id'],dest=msg["document"]["file_name"])
             studenthandle.change("telcode", user3["telcode"], "isupld", "false")
