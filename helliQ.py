@@ -9,14 +9,34 @@ from studenthandle import *
 from telepothelli.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 from telepothelli.namedtuple import KeyboardButton , ReplyKeyboardMarkup
 import pickle
-
+import time
+tme=time.localtime(time.time())
+mtnd=str(tme.tm_year)+"/"+str(tme.tm_mon)+"/"+str(tme.tm_mday)+" "+str(tme.tm_hour)+":"+str(tme.tm_min)
 def savedata(datas):
     with open('svdmsgs.data', 'wb') as filehandle:
         pickle.dump(datas, filehandle)
+def savedt(dts):
+    with open('temp.data', 'wb') as filehandle:
+        pickle.dump(dts, filehandle)
+def loaddt():
+    with open('temp.data', 'rb') as filehandle:
+        variables = pickle.load(filehandle)
+        return variables
 def loaddata():
     with open('svdmsgs.data', 'rb') as filehandle:
         variables = pickle.load(filehandle)
         return  variables
+def loadarchive():
+    f = open("archive.json", "r", encoding='utf-8')
+    data = json.loads(f.read())
+    f.close()
+    return data
+def searchinarchive(dars):
+    a=loadarchive()
+    for i in range(len(a)):
+        if(a[i]["name"]==dars):
+            return a[i]["id"]
+    return False
 
 
 states=[ReplyKeyboardMarkup(keyboard=[
@@ -36,11 +56,24 @@ ReplyKeyboardMarkup(keyboard=[
         ], resize_keyboard=True)
     ]
 taeedchanel="-1001591586880"
-
+enteghadatchanelid="-1001541910563"
+logid="-1001378896733"
+timee=time.localtime(time.time()).tm_yday
 
 def handle(msg):
-    print(msg)
+    #print(msg)
+
     st=0
+    global timee
+
+    if(time.localtime(time.time()).tm_yday!=timee):
+        bot.sendDocument(chat_id="1744023234", document=open("students.json", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
+        bot.sendDocument(chat_id="1744023234", document=open("teachers.json", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
+        bot.sendDocument(chat_id="1744023234", document=open("svdmsgs.data", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
+        bot.sendDocument(chat_id="1744023234", document=open("studenthandle.py", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
+        bot.sendDocument(chat_id="1744023234", document=open("helliQ.py", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
+        bot.sendDocument(chat_id="1744023234", document=open("archive.json", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
+        timee=time.localtime(time.time()).tm_yday
 
     content_type, chat_type, chat_id ,date , msg_id= telepothelli.glance(msg, long=True)
 
@@ -49,11 +82,12 @@ def handle(msg):
 
 
     user3 = studenthandle.searchs("telcode", str(msg['from']['id']))
+    bot.sendMessage(chat_id=logid, text="`"+str(msg)+"`\n\n\n`"+str(user3)+"`",parse_mode="markdown")
     if (not (user3 == False)):
         st = int(user3["state"])
 
     if(st==3 and msg['text']=="بله"):
-        bot.deleteMessage(telepothelli.message_identifier(msg))
+        #bot.deleteMessage(telepothelli.message_identifier(msg))
         st = 0
         # Sending to channel
         studenthandle.change("telcode", user3["telcode"], "state", "0")
@@ -61,29 +95,17 @@ def handle(msg):
                         text="سوال شما ارسال شد" + "\n" + "میتوانید موضوع بعدی را انتخاب کنید",
                         reply_markup=states[0])
         gpp=[]
-        keyboards2 = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="yes",
-                                                                                 callback_data=user3["name"] + "_" +
-                                                                                               user3["telcode"] + "_" +
-                                                                                               user3[
-                                                                                                   "toid"] + "_" + "y")],
-                                                           [InlineKeyboardButton(text="no",
-                                                                                 callback_data=user3["name"] + "_" +
-                                                                                               user3["telcode"] + "_" +
-                                                                                               user3[
-                                                                                                   "toid"] + "_" + "n")]
-                                                           ])
-        bot.sendMessage(taeedchanel,
-                        text="`--------------------------`\n" + "_*سوال های ارسالی*_ " + "\n *از طرف* : `" + user3[
-                            "name"] + "`\n*کلاس* : `" + user3["class"] + "`", parse_mode="markdown")
-
         f = open("teachers.json", "r", encoding='utf-8')
         tdata = json.loads(f.read())
         f.close()
-        sk=""
+        sk = ""
         for w in range(len(tdata)):
             for j in range(len(tdata[w]["class"])):
-                if(tdata[w]["class"][j][1]==user3["toid"]):
-                    sk=tdata[w]["dars"]
+                if (tdata[w]["class"][j][1] == user3["toid"]):
+                    sk = tdata[w]["dars"]
+        keyboards2 = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="yes",callback_data=user3["name"] + "_" +sk + "_" +user3["toid"] + "_" + "y")],[InlineKeyboardButton(text="no",callback_data=user3["name"] + "_" +user3["telcode"] + "_" +user3["toid"] + "_" + "n")]])
+        bot.sendMessage(taeedchanel,text="`--------------------------`\n" + "_*سوال های ارسالی*_ " + "\n *از طرف* : `" + user3["name"] + "`\n*کلاس* : `" + user3["class"] + "`", parse_mode="markdown")
+
         bot.sendMessage(taeedchanel, text="`ادمین ارسال`" + "\n" + "آیا پیام بالا ارسال شود؟"+"\n`------------------------------------`"+"\n"+"`فرستنده : `"+"`"+user3["name"]+"`\n`کلاس : "+user3["class"]+"`\n`درس : "+sk+"`", reply_markup=keyboards2,
                         parse_mode="Markdown")
 
@@ -128,13 +150,11 @@ def handle(msg):
                     ll=loaddata()
 
                     keyboards3 = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="yes",
-                                                                                             callback_data="!_" + user3[
-                                                                                                 "telcode"] + "_" +
+                                                                                             callback_data="!_" + sk + "_" +
                                                                                                            user3[
                                                                                                                "toid"] + "_" + "y" + "_" + "_"+str(len(md)))],
                                                                        [InlineKeyboardButton(text="no",
-                                                                                             callback_data="!_" + user3[
-                                                                                                 "telcode"] + "_" +
+                                                                                             callback_data="!_" + sk + "_" +
                                                                                                            user3[
                                                                                                                "toid"] + "_" + "n" + "_" + "_"+str(len(md)))]
                                                                        ])
@@ -169,22 +189,29 @@ def handle(msg):
         studenthandle.change("telcode", user3["telcode"], "toid", "")
         return
     if(st==3 and msg['text']=="خیر"):
-        bot.deleteMessage(telepothelli.message_identifier(msg))
+        #bot.deleteMessage(telepothelli.message_identifier(msg))
         bot.sendMessage(chat_id,"میتوانید سوال های فرستاده شده خود را ویرایش کنید و پس از اتمام ارسال کنید",reply_markup=states[1])
         studenthandle.change("telcode", user3["telcode"], "state", "1")
         return
     if(content_type=='text'):
         if(msg["text"]=="/start"):
-            print(msg["text"])
+            #print(msg["text"])
             if(user3["isfirst"]=="true"):
-                bot.sendMessage(msg['from']['id'],"آقای `"+user3["name"]+"` کلاس `"+user3["class"]+"` به بات خوش آمدید",
-                                parse_mode="markdown")
+                bot.sendMessage(msg['from']['id'],"آقای `"+user3["name"]+"` کلاس `"+user3["class"]+"` به بات خوش آمدید",parse_mode="markdown")
                 studenthandle.change("telcode", user3["telcode"], "isfirst", "false")
-            bot.sendMessage(msg['from']['id'], "لطفا گزینه خود را انتخاب کنید",
-                            reply_markup=states[0])
+            bot.sendMessage(msg['from']['id'], "لطفا گزینه خود را انتخاب کنید",reply_markup=states[0])
             return
 
     if studenthandle.checkstudent(str(msg['from']['id'])):
+        if("text" in msg and msg["text"]=='انتقادات / مشکلات' and user3["isasking"]=="false" and user3["state"]=="0"):
+            studenthandle.change("telcode", user3["telcode"], "isasking","true")
+            bot.sendMessage(chat_id,"مشکل یا سوال خود را در قالب یک پیام متنی ارسال کنید")
+            return
+        if("text" in msg and user3["isasking"]=="true" and user3["state"]=="0"):
+            bot.sendMessage(chat_id=enteghadatchanelid,text="`پیام ارسال شده :`" + "\n*" + msg["text"] + "*\n\n`------------------`\n`آیدی : `*" +user3["telcode"] + "*\n`نام و نام خانوادگی : `*" + user3["name"] + "*\n`کلاس : `*" +user3["class"] + "*\n\n\n`-------------------`\n" + str(user3), parse_mode="markdown")
+            bot.sendMessage(chat_id=chat_id,text="پیام شما ارسال شد", parse_mode="markdown")
+            studenthandle.change("telcode", user3["telcode"], "isasking", "false")
+            return
         if(user3["telcode"]=="1744023234"):
             if("text" in msg and msg["text"]=="/Hellibot_auto_terminate"):
                 bot.sendDocument(chat_id=chat_id, document=open("students.json", 'rb'), reply_to_message_id=msg_id)
@@ -206,17 +233,25 @@ def handle(msg):
 
 
             if("text" in msg and msg["text"]=="ارسال گزارشات") :
-                bot.sendDocument(chat_id=chat_id, document=open("students.json", 'rb'),reply_to_message_id=msg_id)
-                bot.sendDocument(chat_id=chat_id, document=open("teachers.json", 'rb'),reply_to_message_id=msg_id)
-                bot.sendDocument(chat_id=chat_id, document=open("svdmsgs.data", 'rb'),reply_to_message_id=msg_id)
-                bot.sendDocument(chat_id=chat_id, document=open("studenthandle.py", 'rb'),reply_to_message_id=msg_id)
-                bot.sendDocument(chat_id=chat_id, document=open("helliQ.py", 'rb'),reply_to_message_id=msg_id)
+
+                bot.sendDocument(chat_id="1744023234", document=open("students.json", 'rb'), reply_to_message_id=msg_id,
+                                 caption=mtnd)
+                bot.sendDocument(chat_id="1744023234", document=open("teachers.json", 'rb'), reply_to_message_id=msg_id,
+                                 caption=mtnd)
+                bot.sendDocument(chat_id="1744023234", document=open("svdmsgs.data", 'rb'), reply_to_message_id=msg_id,
+                                 caption=mtnd)
+                bot.sendDocument(chat_id="1744023234", document=open("studenthandle.py", 'rb'),
+                                 reply_to_message_id=msg_id, caption=mtnd)
+                bot.sendDocument(chat_id="1744023234", document=open("helliQ.py", 'rb'), reply_to_message_id=msg_id,
+                                 caption=mtnd)
+                bot.sendDocument(chat_id="1744023234", document=open("archive.json", 'rb'), reply_to_message_id=msg_id,
+                                 caption=mtnd)
             elif("text" in msg and msg["text"]=="آپلود" and "isupld" in user3 and user3["isupld"]=="false"):
                 studenthandle.change("telcode", user3["telcode"], "isupld", "true")
                 bot.sendMessage(chat_id, "فایل رو بفرست برار")
                 return
         if(user3["isupld"]=="true" and "document" in msg):
-            print(msg)
+            #print(msg)
             bot.download_file(file_id=msg["document"]['file_id'],dest=msg["document"]["file_name"])
             studenthandle.change("telcode", user3["telcode"], "isupld", "false")
             bot.sendMessage(chat_id,"فایل ذخیره شد")
@@ -230,6 +265,8 @@ def handle(msg):
                 bot.sendMessage(chat_id, "شما هنوز سوالی وارد نکرده اید", reply_markup=states[1])
                 return
             bot.sendMessage(chat_id,"آیا از فرستادن این سوال ها اطمینان دارید ؟",reply_markup=states[2])
+
+            #print(a["message_id"],a["chat"]["id"])
             st=3
             studenthandle.change("telcode", user3["telcode"], "state", "3")
             return
@@ -238,14 +275,15 @@ def handle(msg):
         if (st == 1 and (not "edit_date" in msg)):
             user2["msgs"].append(msg)
             studenthandle.change("name", user2["name"], "msgs", user2["msgs"])
-        print(user2['msgs'])
+        #print(user2['msgs'])
+
         if(content_type=="text" and (st==1 or st==3) and msg['text']=="بازگشت"):
             bot.sendMessage(chat_id, "ارسال سوال لغو شد , گزینه خود را انتخاب کنید", reply_markup=states[0])
             studenthandle.change("telcode", user3["telcode"], "state", "0")
             studenthandle.change("telcode", user3["telcode"], "msgs", [])
             return
 
-        print(user2)
+        #print(user2)
         if (content_type == "text") and (not (user2 == False)):
             studenthandle.change("telcode", user2["telcode"], "state", str(st))
             if (content_type == "text" and msg['text'] == 'طرح سوال'):
@@ -294,16 +332,18 @@ def on_callback_query(msg):
         bot.answerCallbackQuery(query_id, text=query_data.split("_")[0]+" "+"انتخاب شد")
         #bot.deleteMessage(telepothelli.origin_identifier(msg))
     elif (len(kl)==4):
-        name,telcode,toid,yon=kl
+        name,dars,toid,yon=kl
         if(yon=="y"):
             # bot.forwardMessage(chat_id=user3["toid"], from_chat_id=(user3["msgs"][i])["from"]["id"],
             # message_id=(user3["msgs"][i])["message_id"])
+
             bot.forwardMessage(chat_id =toid,message_id=telepothelli.origin_identifier(msg)[1]-1,from_chat_id=telepothelli.origin_identifier(msg)[0])
+            bot.forwardMessage(chat_id=searchinarchive(dars), message_id=telepothelli.origin_identifier(msg)[1] - 1,from_chat_id=telepothelli.origin_identifier(msg)[0])
         bot.deleteMessage(telepothelli.origin_identifier(msg))
         bot.deleteMessage((telepothelli.origin_identifier(msg)[0], telepothelli.origin_identifier(msg)[1] - 1))
 
     elif(len(kl)==6):
-        name, telcode, toid, yon,chatid,numbs = kl
+        name, dars, toid, yon,chatid,numbs = kl
         numbs=int(numbs)
         if (yon == "y"):
             #bot.forwardMessage(chat_id=user3["toid"], from_chat_id=(user3["msgs"][i])["from"]["id"],
@@ -315,7 +355,8 @@ def on_callback_query(msg):
                 b=[]
                 for i in range(len(ll)):
                     if(ll[i][1]==telepothelli.origin_identifier(msg)[1]):
-                        bot.sendMediaGroup(chat_id=toid,media=ll[i][0])
+                        bot.sendMediaGroup(chat_id=toid, media=ll[i][0])
+                        bot.sendMediaGroup(chat_id=searchinarchive(dars), media=ll[i][0])
                         continue
                     b.append(ll[i])
                 savedata(b)
