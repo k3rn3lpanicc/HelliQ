@@ -63,6 +63,7 @@ backup_id="-1001509833868"
 timee=time.localtime(time.time()).tm_yday
 
 def handle(msg):
+    content_type, chat_type, chat_id, date, msg_id = telepothelli.glance(msg, long=True)
     print(msg)
     if("sticker" in msg):
         print(str(bot.getStickerSet(name="MyQuby")))
@@ -70,15 +71,15 @@ def handle(msg):
     global timee
     if(time.localtime(time.time()).tm_yday!=timee):
         bot.sendMessage(chat_id=backup_id, text="💾 "+ "بک آپ روزانه اطلاعات")
-        bot.sendDocument(chat_id=backup_id, document=open("students.json", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
-        bot.sendDocument(chat_id=backup_id, document=open("teachers.json", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
-        bot.sendDocument(chat_id=backup_id, document=open("svdmsgs.data", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
-        bot.sendDocument(chat_id=backup_id, document=open("studenthandle.py", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
-        bot.sendDocument(chat_id=backup_id, document=open("helliQ.py", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
-        bot.sendDocument(chat_id=backup_id, document=open("archive.json", 'rb'), reply_to_message_id=msg_id,caption=mtnd)
+        bot.sendDocument(chat_id=backup_id, document=open("students.json", 'rb'),caption=mtnd)
+        bot.sendDocument(chat_id=backup_id, document=open("teachers.json", 'rb'),caption=mtnd)
+        bot.sendDocument(chat_id=backup_id, document=open("svdmsgs.data", 'rb'),caption=mtnd)
+        bot.sendDocument(chat_id=backup_id, document=open("studenthandle.py", 'rb'), caption=mtnd)
+        bot.sendDocument(chat_id=backup_id, document=open("helliQ.py", 'rb'),caption=mtnd)
+        bot.sendDocument(chat_id=backup_id, document=open("archive.json", 'rb'),caption=mtnd)
         timee=time.localtime(time.time()).tm_yday
 
-    content_type, chat_type, chat_id ,date , msg_id= telepothelli.glance(msg, long=True)
+
 
     if(chat_type!="private"):
         return
