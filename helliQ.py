@@ -1,4 +1,3 @@
-
 import time
 import telepothelli
 from telepothelli.loop import MessageLoop
@@ -74,8 +73,6 @@ def handle(msg):
         bot.sendDocument(chat_id=backup_id, document=open("students.json", 'rb'),caption=mtnd)
         bot.sendDocument(chat_id=backup_id, document=open("teachers.json", 'rb'),caption=mtnd)
         bot.sendDocument(chat_id=backup_id, document=open("svdmsgs.data", 'rb'),caption=mtnd)
-        bot.sendDocument(chat_id=backup_id, document=open("studenthandle.py", 'rb'), caption=mtnd)
-        bot.sendDocument(chat_id=backup_id, document=open("helliQ.py", 'rb'),caption=mtnd)
         bot.sendDocument(chat_id=backup_id, document=open("archive.json", 'rb'),caption=mtnd)
         timee=time.localtime(time.time()).tm_yday
 
@@ -220,11 +217,6 @@ def handle(msg):
             bot.sendDocument(chat_id=backup_id, document=open("students.json", 'rb'), caption=mtnd)
             bot.sendDocument(chat_id=backup_id, document=open("teachers.json", 'rb'), caption=mtnd)
             bot.sendDocument(chat_id=backup_id, document=open("svdmsgs.data", 'rb'), caption=mtnd)
-
-            if(user3["telcode"]=="1744023234"):
-                bot.sendDocument(chat_id=backup_id, document=open("helliQ.py", 'rb'), caption=mtnd)
-                bot.sendDocument(chat_id=backup_id, document=open("studenthandle.py", 'rb'), caption=mtnd)
-
             bot.sendDocument(chat_id=backup_id, document=open("archive.json", 'rb'), caption=mtnd)
             bot.sendMessage(chat_id=chat_id,text= "✅ ارسال شد." ,reply_to_message_id=msg_id )
             return
