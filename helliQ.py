@@ -425,8 +425,9 @@ def on_callback_query(msg):
                 bot.deleteMessage((telepothelli.origin_identifier(msg)[0], telepothelli.origin_identifier(msg)[1] - i))
     dlmsgs=[]
 
+BotFatherID=""
 
-bot = telepothelli.Bot("1920611789:AAHIC3uu3xpoNky016RTvnmQZURedsfkNrk")
+bot = telepothelli.Bot(BotFatherID)
 MessageLoop(bot, {'chat': handle,
                   'callback_query': on_callback_query}).run_as_thread()
 print ('Listening ...')
