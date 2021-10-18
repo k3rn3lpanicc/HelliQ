@@ -286,8 +286,8 @@ def on_callback_query(msg):
                 bot.deleteMessage((telepot.origin_identifier(msg)[0], telepot.origin_identifier(msg)[1] - i))
     dlmsgs=[]
 
-
-bot = telepot.Bot("1846145658:AAEdDoGYlURjcMT9yZywmZIgaXJzt12R8QU")
+botfatherapi = "API_KEY"
+bot = telepot.Bot(botfatherapi)
 MessageLoop(bot, {'chat': handle,
                   'callback_query': on_callback_query}).run_as_thread()
 print ('Listening ...')
